@@ -73,7 +73,8 @@ function PiecePlane({ config, scrollProgress }: { config: PieceConfig; scrollPro
     }
   });
 
-  const textureAspect = texture.image?.width && texture.image?.height ? texture.image.width / texture.image.height : 1.4;
+  const image = texture.image as { width?: number; height?: number } | undefined;
+  const textureAspect = image?.width && image?.height ? image.width / image.height : 1.4;
   const maxWidth = Math.min(viewport.width * (size.width < 720 ? .94 : .68), size.width < 720 ? 5.4 : 6.4);
   const h = maxWidth / textureAspect;
   const quality = size.width < 720 || window.matchMedia('(pointer: coarse)').matches ? .56 : .92;
