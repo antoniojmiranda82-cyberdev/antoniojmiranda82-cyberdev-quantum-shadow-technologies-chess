@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
+import './liquid-motion.css';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { ChessRouteTransition } from '../components/navigation/ChessRouteTransition';

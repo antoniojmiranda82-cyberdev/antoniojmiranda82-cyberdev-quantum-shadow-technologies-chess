@@ -30,10 +30,58 @@ function usePageVisible() {
   return visible;
 }
 
+function MoltenRings({
+  accent,
+  width,
+  height,
+  reduced,
+  quality
+}: {
+  accent: string;
+  width: number;
+  height: number;
+  reduced: boolean;
+  quality: number;
+}) {
+  const group = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (!group.current || reduced) return;
+    const t = state.clock.elapsedTime;
+    group.current.children.forEach((child, index) => {
+      const mesh = child as THREE.Mesh;
+      const pulse = 1 + Math.sin(t * (0.72 + index * 0.11) + index * 1.3) * (0.035 + index * 0.006);
+      mesh.scale.x = pulse;
+      mesh.scale.y = pulse * (0.20 + index * 0.022);
+      const material = mesh.material as THREE.MeshBasicMaterial;
+      material.opacity = (0.11 - index * 0.022) + Math.sin(t * 0.9 + index) * 0.018;
+    });
+  });
+
+  const y = -height * 0.43;
+  const ringWidth = Math.max(width * 0.42, 1.6);
+
+  return <group ref={group} position={[width * 0.05, y, -0.035]}>
+    {[1, 1.42, 1.92].map((scale, index) => (
+      <mesh key={scale} scale={[1, 0.20 + index * 0.022, 1]} position={[0, index * -0.025, 0]}>
+        <ringGeometry args={[ringWidth * scale * 0.86, ringWidth * scale, quality > 0.7 ? 96 : 48]} />
+        <meshBasicMaterial
+          color={accent}
+          transparent
+          opacity={0.11 - index * 0.022}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+    ))}
+  </group>;
+}
+
 function PiecePlane({ config, scrollProgress }: { config: PieceConfig; scrollProgress: { current: number } }) {
   const texture = useTexture(config.image);
   const group = useRef<THREE.Group>(null);
   const glow = useRef<THREE.Mesh>(null);
+  const rim = useRef<THREE.Mesh>(null);
   const pointer = useDampedPointer();
   const [hovered, setHovered] = useState(false);
   const { viewport, size } = useThree();
@@ -50,26 +98,36 @@ function PiecePlane({ config, scrollProgress }: { config: PieceConfig; scrollPro
     const t = state.clock.elapsedTime;
     const scroll = scrollProgress.current;
     const hoverBoost = hovered ? 1 : p.activity * .22;
+
     if (reduced) {
       group.current.position.set(0, 0, 0);
       group.current.rotation.set(0, 0, 0);
       group.current.scale.setScalar(1);
       return;
     }
+
     const targetX = p.x * (0.26 + motion.drift * 0.12) + scroll * motion.scrollX;
     const targetY = p.y * 0.20 + Math.sin(t * motion.float) * 0.11 + scroll * motion.scrollY;
     const targetRY = p.x * motion.tilt;
     const targetRX = -p.y * motion.tilt * 0.62;
+
     group.current.position.x = THREE.MathUtils.damp(group.current.position.x, targetX, 4.4, delta);
     group.current.position.y = THREE.MathUtils.damp(group.current.position.y, targetY, 4.8, delta);
     group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, targetRY, 4.2, delta);
     group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, targetRX, 4.2, delta);
     group.current.rotation.z = THREE.MathUtils.damp(group.current.rotation.z, Math.sin(t * motion.spin) * .017, 3.4, delta);
+
     const scale = motion.hoverScale + hoverBoost * (motion.hoverScale - 1) - scroll * .025;
     group.current.scale.setScalar(THREE.MathUtils.damp(group.current.scale.x, scale, 5.2, delta));
+
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = .045 + hoverBoost * .08 + Math.sin(t * .8) * .012;
+      mat.opacity = .075 + hoverBoost * .10 + Math.sin(t * .8) * .018;
+    }
+
+    if (rim.current) {
+      const mat = rim.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = .12 + hoverBoost * .09 + Math.sin(t * 1.1) * .02;
     }
   });
 
@@ -80,16 +138,46 @@ function PiecePlane({ config, scrollProgress }: { config: PieceConfig; scrollPro
   const quality = size.width < 720 || window.matchMedia('(pointer: coarse)').matches ? .56 : .92;
 
   return <group ref={group}>
-    <mesh ref={glow} position={[0, 0, -0.08]} scale={1.06}>
+    <MoltenRings accent={config.accent} width={maxWidth} height={h} reduced={reduced} quality={quality} />
+
+    <mesh ref={glow} position={[0, 0, -0.10]} scale={1.085}>
       <planeGeometry args={[maxWidth, h]} />
-      <meshBasicMaterial map={texture} transparent opacity={0.055} color={config.accent} depthWrite={false} blending={THREE.AdditiveBlending} />
+      <meshBasicMaterial
+        map={texture}
+        transparent
+        opacity={0.075}
+        color={config.accent}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
     </mesh>
+
+    <mesh ref={rim} position={[0.018, -0.01, -0.055]} scale={1.025}>
+      <planeGeometry args={[maxWidth, h]} />
+      <meshBasicMaterial
+        map={texture}
+        transparent
+        opacity={0.12}
+        color={config.accent}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+
     <mesh onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)}>
       <planeGeometry args={[maxWidth, h]} />
       <meshBasicMaterial map={texture} transparent toneMapped={false} depthWrite={false} />
     </mesh>
+
     <group scale={[maxWidth / 4.8, h / 3.4, 1]} position={[maxWidth * .05, 0, .08]}>
-      <GoldPixelLoop accent={config.accent} profile={motion} activity={hovered ? 1 : pointer.current.activity} scroll={scrollProgress.current} reduced={reduced} quality={quality} />
+      <GoldPixelLoop
+        accent={config.accent}
+        profile={motion}
+        activity={hovered ? 1 : pointer.current.activity}
+        scroll={scrollProgress.current}
+        reduced={reduced}
+        quality={quality}
+      />
     </group>
   </group>;
 }
