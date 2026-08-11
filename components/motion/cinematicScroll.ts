@@ -30,9 +30,9 @@ export function segment(progress: number, start: number, end: number) {
 export function getScenePhase(progress: number): ScenePhase {
   const p = clamp01(progress);
   return {
-    entry: 1,
-    read: 1 - segment(p, 0.12, 0.34),
-    exit: segment(p, 0.04, 0.46),
+    entry: 1 - segment(p, 0.00, 0.16),
+    read: 1 - segment(p, 0.14, 0.44),
+    exit: segment(p, 0.18, 0.72),
   };
 }
 

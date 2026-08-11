@@ -1,6 +1,12 @@
 'use client';
+
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 
 export function ChessRouteTransition() {
   const pathname = usePathname();
@@ -11,7 +17,10 @@ export function ChessRouteTransition() {
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => { reduced.current = mq.matches; };
+    const sync = () => {
+      reduced.current = mq.matches;
+    };
+
     sync();
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
@@ -19,33 +28,86 @@ export function ChessRouteTransition() {
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
       const anchor = (event.target as Element | null)?.closest('a');
       if (!anchor) return;
+
       const href = anchor.getAttribute('href');
-      if (!href || !href.startsWith('/') || href.startsWith('//') || href === pathname || anchor.hasAttribute('download')) return;
+      if (
+        !href ||
+        !href.startsWith('/') ||
+        href.startsWith('//') ||
+        href === pathname ||
+        anchor.hasAttribute('download')
+      ) {
+        return;
+      }
+
       if (reduced.current) return;
+
       event.preventDefault();
       if (navigating.current) return;
+
       navigating.current = true;
+      document.documentElement.classList.add('is-route-leaving');
       setActive(true);
-      window.setTimeout(() => router.push(href), 360);
+
+      window.setTimeout(() => {
+        router.push(href);
+      }, 430);
     };
+
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
   }, [pathname, router]);
 
   useEffect(() => {
+    document.documentElement.classList.remove('is-route-leaving');
+
     if (!active) return;
+
     const id = window.setTimeout(() => {
       setActive(false);
       navigating.current = false;
+      document.documentElement.classList.remove('is-route-leaving');
     }, 760);
+
     return () => window.clearTimeout(id);
   }, [pathname, active]);
 
-  return <div className={`route-wipe${active ? ' is-active' : ''}`} aria-hidden="true">
-    <div className="route-particles">{Array.from({length: 24}, (_, i) => <b key={i} style={{ '--i': i } as CSSProperties}/>)}</div>
-    <span/><span/><span/><span/>
-  </div>;
+  useEffect(() => {
+    return () => {
+      document.documentElement.classList.remove('is-route-leaving');
+    };
+  }, []);
+
+  return (
+    <div
+      className={`route-wipe${active ? ' is-active' : ''}`}
+      aria-hidden="true"
+    >
+      <div className="route-particles">
+        {Array.from({ length: 24 }, (_, i) => (
+          <b
+            key={i}
+            style={{ '--i': i } as CSSProperties}
+          />
+        ))}
+      </div>
+      <span />
+      <span />
+      <span />
+      <span />
+    </div>
+  );
 }
