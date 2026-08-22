@@ -53,12 +53,12 @@ export function PieceExperience({ config }: { config: PieceConfig }) {
             <Link className="text-link" href={config.nextRoute}>
               {config.nextLabel} <span aria-hidden="true">↗</span>
             </Link>
-            <a
+            <Link
               className="text-link secondary"
-              href="mailto:hello@quantumshadowtechnologies.com"
+              href="/contact"
             >
               Start a Project
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -69,6 +69,11 @@ export function PieceExperience({ config }: { config: PieceConfig }) {
       </section>
 
       <PieceNarrative config={config} />
+      <section className="conversion-band" aria-labelledby={`${config.key}-conversion`}>
+        <p>{config.label} · Next move</p>
+        <h2 id={`${config.key}-conversion`}>Turn the right idea into a system you can operate.</h2>
+        <Link href="/contact" className="conversion-link">Start a project <span aria-hidden="true">↗</span></Link>
+      </section>
     </main>
   );
 }

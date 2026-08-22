@@ -25,6 +25,7 @@ export type PieceConfig = {
   key: PieceKey;
   route: string;
   label: string;
+  navLabel: string;
   kicker: string;
   lines: [string, string, string];
   summary: string;
@@ -38,7 +39,7 @@ export type PieceConfig = {
 
 export const pieces: Record<PieceKey, PieceConfig> = {
   king: {
-    key: 'king', route: '/', label: 'King', kicker: 'Command the board',
+    key: 'king', route: '/', label: 'King', navLabel: 'Home', kicker: 'Command the board',
     lines: ['STRATEGY', 'IS', 'THE ADVANTAGE.'],
     summary: 'Quantum Shadow Technologies engineers AI, cloud, cybersecurity, automation, and custom software as one coordinated system.',
     image: '/chess/king.png', accent: '#d7ae55', nextRoute: '/ai-automation', nextLabel: 'Queen · AI & Automation',
@@ -50,7 +51,7 @@ export const pieces: Record<PieceKey, PieceConfig> = {
     }
   },
   queen: {
-    key: 'queen', route: '/ai-automation', label: 'Queen', kicker: 'Move everywhere at once',
+    key: 'queen', route: '/ai-automation', label: 'Queen', navLabel: 'AI & Automation', kicker: 'Move everywhere at once',
     lines: ['AUTOMATE', 'WHAT', 'SHOULD MOVE.'],
     summary: 'AI agents, workflows, integrations, and intelligent operations designed to create leverage without creating chaos.',
     image: '/chess/queen.png', accent: '#e1c878', nextRoute: '/cloud-strategy', nextLabel: 'Bishop · Cloud Strategy',
@@ -62,7 +63,7 @@ export const pieces: Record<PieceKey, PieceConfig> = {
     }
   },
   bishop: {
-    key: 'bishop', route: '/cloud-strategy', label: 'Bishop', kicker: 'See the angle others miss',
+    key: 'bishop', route: '/cloud-strategy', label: 'Bishop', navLabel: 'Cloud', kicker: 'See the angle others miss',
     lines: ['DESIGN', 'THE', 'RIGHT ANGLE.'],
     summary: 'Cloud architecture, Microsoft 365, advisory, governance, and systems strategy aligned before expensive decisions get locked in.',
     image: '/chess/bishop.png', accent: '#d9b45f', nextRoute: '/cybersecurity', nextLabel: 'Rook · Cybersecurity',
@@ -74,7 +75,7 @@ export const pieces: Record<PieceKey, PieceConfig> = {
     }
   },
   rook: {
-    key: 'rook', route: '/cybersecurity', label: 'Rook', kicker: 'Hold the line',
+    key: 'rook', route: '/cybersecurity', label: 'Rook', navLabel: 'Cybersecurity', kicker: 'Hold the line',
     lines: ['SECURE', 'THE', 'FOUNDATION.'],
     summary: 'Cybersecurity, infrastructure hardening, identity, monitoring, and resilient architecture built into the system from the start.',
     image: '/chess/rook.png', accent: '#d7b75f', nextRoute: '/software', nextLabel: 'Knight · Custom Software',
@@ -86,7 +87,7 @@ export const pieces: Record<PieceKey, PieceConfig> = {
     }
   },
   knight: {
-    key: 'knight', route: '/software', label: 'Knight', kicker: 'Take the route nobody expects',
+    key: 'knight', route: '/software', label: 'Knight', navLabel: 'Software', kicker: 'Take the route nobody expects',
     lines: ['BUILD', 'BEYOND', 'THE OBVIOUS.'],
     summary: 'Custom software, SaaS, mobile experiences, and experimental product work engineered around the problem instead of a template.',
     image: '/chess/knight.png', accent: '#d6ad51', nextRoute: '/process', nextLabel: 'Pawn · Execution',
@@ -98,7 +99,7 @@ export const pieces: Record<PieceKey, PieceConfig> = {
     }
   },
   pawn: {
-    key: 'pawn', route: '/process', label: 'Pawn', kicker: 'Execution wins territory',
+    key: 'pawn', route: '/process', label: 'Pawn', navLabel: 'Process', kicker: 'Execution wins territory',
     lines: ['MOVE', 'WITH', 'DISCIPLINE.'],
     summary: 'Discovery, architecture, build, deployment, automation, observation, and iteration. Progress comes from clean moves made consistently.',
     image: '/chess/pawn.png', accent: '#d6b158', nextRoute: '/', nextLabel: 'King · Return Home',
