@@ -1,5 +1,5 @@
 const base = process.env.BASE_URL ?? 'http://localhost:3000';
-const routes = ['/', '/ai-automation', '/cloud-strategy', '/cybersecurity', '/software', '/process'];
+const routes = ['/', '/ai-automation', '/cloud-strategy', '/cybersecurity', '/software', '/process', '/qcore', '/qcore/connect', '/contact'];
 let failed = false;
 for (const route of routes) {
   try {

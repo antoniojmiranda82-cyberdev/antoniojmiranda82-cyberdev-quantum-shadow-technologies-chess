@@ -16,6 +16,7 @@ export function Header(){
         const active = pathname === p.route;
         return <Link key={key} href={p.route} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined} className={active ? 'is-active' : ''}><span>{p.navLabel}</span></Link>;
       })}
+      <Link href="/qcore" onClick={() => setOpen(false)} aria-current={pathname === '/qcore' ? 'page' : undefined} className={pathname.startsWith('/qcore') ? 'is-active' : ''}><span>QCore</span></Link>
       <Link href="/company" onClick={() => setOpen(false)} aria-current={pathname === '/company' ? 'page' : undefined}>Company</Link>
       <Link href="/contact" onClick={() => setOpen(false)} className="nav-cta">Start a Project</Link>
     </nav>
